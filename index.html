@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
+  <title>Speech to Text</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    /* Your full CSS stays unchanged */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #181818;
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+      position: relative;
+    }
+    .watermark {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      font-size: 1.2rem;
+      color: rgba(245, 197, 66, 0.6);
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .voice_to_text {
+      background: linear-gradient(to bottom right, #282828, #383838);
+      padding: 60px;
+      border-radius: 24px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+      max-width: 700px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #f5c542;
+      margin-bottom: 30px;
+      font-size: 3rem;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      font-weight: 700;
+    }
+    #convert_text {
+      width: 500px;
+      height: 200px;
+      padding: 20px;
+      margin-bottom: 30px;
+      border: none;
+      border-radius: 12px;
+      background: #262626;
+      color: #e0e0e0;
+      font-size: 18px;
+      resize: none;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      font-family: 'Courier New', Courier, monospace;
+    }
+    #click_to_record {
+      background: #f5c542;
+      border: none;
+      padding: 20px 50px;
+      color: #181818;
+      border-radius: 12px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 8px 16px rgba(245, 197, 66, 0.5);
+      font-weight: 700;
+    }
+    #click_to_record:hover {
+      background: #e1b134;
+      box-shadow: 0 10px 20px rgba(225, 177, 52, 0.7);
+    }
+    #is_recording, #confidence_id {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #a6a6a6;
+    }
+    .dropdown-container {
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 400px;
+    }
+    select {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      background: #262626;
+      color: #e0e0e0;
+      font-size: 18px;
+      border: none;
+      appearance: none;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+    .select-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+    .select-wrapper::after {
+      content: '▼';
+      position: absolute;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+      color: #e0e0e0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="watermark">Powered by ANANT</div>
+
+  <div class="voice_to_text">
+    <h1>SPEECH TO TEXT</h1>
+
+    <div class="dropdown-container">
+      <div class="select-wrapper">
+        <select id="language_select">
+          <option value="hi-IN">Hindi (India)</option>
+          <option value="en-IN">English (India)</option>
+          <option value="en-US" selected>English (United States)</option>
+          <option value="en-GB">English (UK)</option>
+          <option value="pa-IN">Punjabi (India)</option>
+          <option value="mr-IN">Marathi (India)</option>
+          <option value="gu-IN">Gujarati (India)</option>
+          <option value="ta-IN">Tamil (India)</option>
+          <option value="te-IN">Telugu (India)</option>
+          <option value="bn-IN">Bengali (India)</option>
+          <option value="ur-PK">Urdu (Pakistan)</option>
+        </select>
+      </div>
+    </div>
+
+    <textarea id="convert_text" placeholder="Your speech will appear here..."></textarea>
+    <button id="click_to_record">🎙 Start Recording</button>
+    <div id="is_recording">Status: Not Recording</div>
+    <div id="confidence_id"></div>
+  </div>
+
+  <script>
+    const button = document.getElementById("click_to_record");
+    const content = document.getElementById("convert_text");
+    const status = document.getElementById("is_recording");
+    const confidenceDisplay = document.getElementById("confidence_id");
+    const languageSelector = document.getElementById("language_select");
+
+    let isRecording = false;
+    let recognition;
+
+    try {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        throw new Error("Speech Recognition not supported");
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      button.addEventListener("click", () => {
+        if (!isRecording) {
+          recognition.lang = languageSelector.value;
+          recognition.start();
+          isRecording = true;
+          status.textContent = "Status: Recording...";
+          button.textContent = "🛑 Stop Recording";
+        } else {
+          recognition.stop();
+          isRecording = false;
+          status.textContent = "Status: Not Recording";
+          button.textContent = "🎙 Start Recording";
+        }
+      });
+
+      recognition.onresult = (event) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        content.value = transcript;
+
+        const confidence = event.results[event.results.length - 1][0].confidence;
+        if (confidence) {
+          confidenceDisplay.textContent = `Confidence: ${(confidence * 100).toFixed(2)}%`;
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        status.textContent = `Error: ${event.error}`;
+        if (isRecording && event.error !== 'aborted') {
+          recognition.stop();
+          isRecording = false;
+          button.textContent = "🎙 Start Recording";
+        }
+      };
+
+      recognition.onend = () => {
+        if (isRecording) {
+          recognition.start(); // Auto restart
+        }
+      };
+    } catch (err) {
+      alert("Speech Recognition not supported in this browser.");
+      console.error(err);
+    }
+  </script>
+</body>
+</html>
