@@ -1,13 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Speech to Text</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
-    /* Your full CSS stays unchanged */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -19,8 +19,9 @@
       height: 100vh;
       flex-direction: column;
       text-align: center;
-      position: relative;
+      padding: 20px;
     }
+
     .watermark {
       position: absolute;
       bottom: 20px;
@@ -30,26 +31,29 @@
       font-weight: 700;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
+
     .voice_to_text {
       background: linear-gradient(to bottom right, #282828, #383838);
-      padding: 60px;
+      padding: 40px;
       border-radius: 24px;
       box-shadow: 0 12px 24px rgba(0,0,0,0.4);
       max-width: 700px;
-      width: 90%;
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+
     h1 {
       color: #f5c542;
       margin-bottom: 30px;
-      font-size: 3rem;
+      font-size: 2.5rem;
       text-shadow: 0 4px 8px rgba(0,0,0,0.5);
       font-weight: 700;
     }
+
     #convert_text {
-      width: 500px;
+      width: 100%;
       height: 200px;
       padding: 20px;
       margin-bottom: 30px;
@@ -58,53 +62,60 @@
       background: #262626;
       color: #e0e0e0;
       font-size: 18px;
-      resize: none;
+      resize: vertical;
       box-shadow: 0 6px 12px rgba(0,0,0,0.3);
       font-family: 'Courier New', Courier, monospace;
     }
+
     #click_to_record {
       background: #f5c542;
       border: none;
-      padding: 20px 50px;
+      padding: 16px 40px;
       color: #181818;
       border-radius: 12px;
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
       transition: background 0.3s, box-shadow 0.3s;
       box-shadow: 0 8px 16px rgba(245, 197, 66, 0.5);
       font-weight: 700;
     }
+
     #click_to_record:hover {
       background: #e1b134;
       box-shadow: 0 10px 20px rgba(225, 177, 52, 0.7);
     }
+
     #is_recording, #confidence_id {
-      margin-top: 20px;
-      font-size: 18px;
+      margin-top: 15px;
+      font-size: 16px;
       color: #a6a6a6;
     }
+
     .dropdown-container {
       margin-bottom: 20px;
       width: 100%;
       max-width: 400px;
     }
+
     select {
       width: 100%;
-      padding: 15px;
+      padding: 12px;
       border-radius: 12px;
       background: #262626;
       color: #e0e0e0;
-      font-size: 18px;
+      font-size: 16px;
       border: none;
       appearance: none;
       cursor: pointer;
       box-shadow: 0 6px 12px rgba(0,0,0,0.3);
     }
+
     .select-wrapper {
       position: relative;
       display: inline-block;
       width: 100%;
     }
+
     .select-wrapper::after {
       content: '▼';
       position: absolute;
@@ -141,7 +152,7 @@
     </div>
 
     <textarea id="convert_text" placeholder="Your speech will appear here..."></textarea>
-    <button id="click_to_record">🎙 Start Recording</button>
+    <button id="click_to_record" role="button" aria-pressed="false">🎙 Start Recording</button>
     <div id="is_recording">Status: Not Recording</div>
     <div id="confidence_id"></div>
   </div>
@@ -154,6 +165,7 @@
     const languageSelector = document.getElementById("language_select");
 
     let isRecording = false;
+    let manuallyStopped = false;
     let recognition;
 
     try {
@@ -166,27 +178,20 @@
       recognition.continuous = true;
       recognition.interimResults = true;
 
-      button.addEventListener("click", () => {
-        if (!isRecording) {
-          recognition.lang = languageSelector.value;
-          recognition.start();
-          isRecording = true;
-          status.textContent = "Status: Recording...";
-          button.textContent = "🛑 Stop Recording";
-        } else {
-          recognition.stop();
-          isRecording = false;
-          status.textContent = "Status: Not Recording";
-          button.textContent = "🎙 Start Recording";
-        }
-      });
-
       recognition.onresult = (event) => {
-        let transcript = "";
+        let finalTranscript = "";
+        let interimTranscript = "";
+
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+          } else {
+            interimTranscript += transcript;
+          }
         }
-        content.value = transcript;
+
+        content.value = finalTranscript + interimTranscript;
 
         const confidence = event.results[event.results.length - 1][0].confidence;
         if (confidence) {
@@ -197,18 +202,35 @@
       recognition.onerror = (event) => {
         console.error("Speech recognition error:", event.error);
         status.textContent = `Error: ${event.error}`;
-        if (isRecording && event.error !== 'aborted') {
-          recognition.stop();
-          isRecording = false;
-          button.textContent = "🎙 Start Recording";
-        }
+        isRecording = false;
+        button.textContent = "🎙 Start Recording";
       };
 
       recognition.onend = () => {
-        if (isRecording) {
-          recognition.start(); // Auto restart
+        status.textContent = "Status: Not Recording";
+        if (isRecording && !manuallyStopped) {
+          recognition.start(); // auto-restart
         }
       };
+
+      button.addEventListener("click", () => {
+        if (!isRecording) {
+          recognition.lang = languageSelector.value;
+          recognition.start();
+          isRecording = true;
+          manuallyStopped = false;
+          status.textContent = "Status: Recording...";
+          button.textContent = "🛑 Stop Recording";
+          button.setAttribute("aria-pressed", "true");
+        } else {
+          recognition.stop();
+          manuallyStopped = true;
+          isRecording = false;
+          status.textContent = "Status: Not Recording";
+          button.textContent = "🎙 Start Recording";
+          button.setAttribute("aria-pressed", "false");
+        }
+      });
     } catch (err) {
       alert("Speech Recognition not supported in this browser.");
       console.error(err);
