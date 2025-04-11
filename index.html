@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>STARM Industries STT</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * {
@@ -16,13 +16,13 @@
     body {
       font-family: 'Orbitron', sans-serif;
       background: radial-gradient(circle at top left, #010a13, #000);
-      color: #0ff;
-      transition: background 0.5s ease, color 0.5s ease;
+      color: rgb(212, 0, 0);
       overflow-x: hidden;
+      transition: background 0.5s ease, color 0.5s ease;
     }
 
     body.light-mode {
-      background: #f0f0f0;
+      background: #2e0446;
       color: #000;
     }
 
@@ -30,40 +30,63 @@
       position: absolute;
       top: 20px;
       left: 30px;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 700;
+      letter-spacing: 2px;
       color: #00f5d4;
-      text-shadow: 0 0 10px #00f5d4;
-      animation: flicker 2s infinite alternate;
+      text-shadow: 0 0 12px #0501ec, 0 0 24px #00109e;
+      animation: flicker 2.5s infinite alternate;
       z-index: 99;
     }
 
     .background-holo {
-      position: absolute;
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) rotate(-30deg);
-      font-size: 12rem;
+      font-size: 20rem;
       font-weight: 900;
-      color: #00f5d4;
-      opacity: 0.03;
-      text-shadow: 0 0 40px #00f5d4;
-      animation: flicker 4s infinite alternate;
+      color: #55c58f;
+      opacity: 0.02;
+      letter-spacing: 2px;
+      text-shadow: 0 0 50px #00b45d, 0 0 200px #b100f7;
+      animation: flicker 6s infinite alternate;
       user-select: none;
       pointer-events: none;
+      z-index: 0;
+    }
+
+    .creator-name {
+      position: fixed;
+      bottom: 20px;
+      right: 40px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgb(23, 228, 40);
+      text-shadow: 0 0 10px rgba(8, 255, 29, 0.808), 0 0 30px #00ff00;
+      z-index: 99;
+      letter-spacing: 10px;
+      animation: flicker 4s infinite alternate;
+    }
+
+    @keyframes flicker {
+      0%, 100%{ opacity: 50; }
+      50% { opacity: 0.06; }
     }
 
     .mic-pulse {
       width: 30px;
       height: 30px;
       border-radius: 50%;
-      background: #0ff;
-      box-shadow: 0 0 20px #0ff;
+      background: rgb(166, 226, 226);
+      box-shadow: 0 0 20px rgb(0, 255, 255);
       margin: 10px auto;
       animation: pulse 1.5s infinite;
     }
 
-    .hidden { display: none; }
+    .hidden {
+      display: none;
+    }
 
     @keyframes pulse {
       0% { transform: scale(1); opacity: 1; }
@@ -71,23 +94,21 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    @keyframes flicker {
-      0%, 100% { opacity: 0.02; }
-      50% { opacity: 0.06; }
-    }
-
     canvas {
-      background: rgba(0, 255, 255, 0.05);
+      background: rgba(49, 61, 61, 0.05);
       border-radius: 0.5rem;
     }
   </style>
 </head>
 <body>
+
+  <!-- Logos & Tags -->
   <div class="holo-logo">STARM INDUSTRIES</div>
   <div class="background-holo">STARM</div>
+  <div class="creator-name">ANANT TIWARI</div>
 
   <!-- Theme Toggle Button -->
-  <div class="absolute top-5 right-5">
+  <div class="absolute top-5 right-5 z-50">
     <button onclick="toggleTheme()" class="bg-[#0ff] text-black px-4 py-2 rounded-lg shadow hover:bg-[#00d4c0]">
       Toggle Theme
     </button>
@@ -97,7 +118,7 @@
   <div class="mic-pulse hidden" id="micPulse"></div>
 
   <!-- Main Container -->
-  <div class="max-w-2xl mx-auto mt-40 bg-white/10 p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-cyan-500">
+  <div class="max-w-2xl mx-auto mt-40 bg-white/10 p-8 rounded-2xl shadow-2xl backdrop-blur-md border border-cyan-500 relative z-10">
     <h1 class="text-center text-3xl mb-4 text-cyan-300">🎤 Speech-to-Text Converter</h1>
 
     <!-- Language Selector -->
@@ -127,7 +148,7 @@
     <canvas id="audioCanvas" class="w-full h-16 mt-6"></canvas>
   </div>
 
-  <!-- JavaScript Logic -->
+  <!-- JavaScript -->
   <script>
     let isRecording = false;
     let manuallyStopped = false;
@@ -212,7 +233,7 @@
       recognition.onend = () => {
         status.textContent = "Status: Not Recording";
         micPulse.classList.add("hidden");
-        if (isRecording && !manuallyStopped) recognition.start(); // Auto-restart
+        if (isRecording && !manuallyStopped) recognition.start();
       };
 
       button.addEventListener("click", async () => {
