@@ -1,35 +1,61 @@
-# 🎤 Speech to Text Web App
+# 🗣️ Speech-to-Text Web App
 
-A simple and elegant web application that converts spoken words into text using the Web Speech API. Built with HTML, CSS, and JavaScript — no external libraries required!
+🎤 A real-time, **multilingual voice-to-text web application** built entirely with **HTML, CSS, and JavaScript** – no frameworks, no backend, just clean, client-side code. Converts spoken language into text instantly, right from your browser.
 
-## 🚀 Live Demo
+🔗 **Live Demo:** [https://at7uck.netlify.app/](https://at7uck.netlify.app/)
 
-👉 [Click here to try it out](https://at7uck.github.io/speech-to-text-app/) *(optional – only if hosted with GitHub Pages)*
+---
 
-## 📸 Screenshot
+## 🌟 Features
 
-> Add a screenshot after hosting! Example:
-![Demo Screenshot](https://yourdomain.com/screenshot.png)
+- ✅ **Real-time voice-to-text transcription**
+- ✅ **100% frontend-only** – no backend/server needed
+- ✅ **Multilingual & multi-accent support**, including:
+  - 🇮🇳 Hindi (India)
+  - 🇬🇧 English (UK)
+  - 🇺🇸 English (US)
+  - 🇮🇳 English (India)
+  - 🗣️ Punjabi
+  - 🗣️ Tamil
+  - 🗣️ Telugu
+- ✅ **Fast**, **lightweight**, and **mobile responsive**
+- ✅ **Minimal UI** with clean and intuitive design
 
-## ✨ Features
+---
 
-- 🎙️ Start and stop voice recognition with one click  
-- 🔁 Real-time transcription  
-- 🌍 Works in modern browsers (Chrome recommended)  
-- 📋 Copy the transcribed text  
-- 📱 Responsive UI
+## 🚀 Technologies Used
 
-## 🛠️ Built With
+- 🌐 **HTML5**
+- 🎨 **CSS3**
+- 🧠 **JavaScript**
+- 🗣️ **Web Speech API** (Browser-native speech recognition)
+- 🌍 **Netlify** (For instant deployment & hosting)
 
-- HTML5
-- CSS3
-- JavaScript (Vanilla)
-- Web Speech API
+---
 
-## 📂 Getting Started
+## 📂 Project Structure
 
-To run the app locally:
 
-1. Clone the repository  
-   ```bash
-   git clone https://github.com/AT7UCK/speech-to-text-app.git
+📁 speech-to-text/
+├── index.html   # Main file with embedded JS & CSS
+💡 Everything is bundled inside a single HTML file – no external scripts or stylesheets for ultra-simplicity.
+
+📸 Demo & Screenshots
+
+
+🖼️![Screenshot from 2025-05-27 09-20-26](https://github.com/user-attachments/assets/d8b2b263-f28f-4879-8dd9-3cb8d0dd1958)
+
+🎬[Screencast from 2025-05-27 09-21-52.webm](https://github.com/user-attachments/assets/5afecd68-2269-46b7-ba65-9e56517fb1b0)
+
+
+
+👤 Author
+Anant Tiwari
+💼 Aspiring Full Stack Developer | Python Enthusiast | Web Dev Learner
+🔗 LinkedIn
+💻 GitHub
+
+📢 Want to Collaborate?
+Feel free to raise an issue or fork this repo if you'd like to improve it or suggest enhancements!
+
+⭐ If you liked this project, don't forget to star the repo and share it on LinkedIn!
